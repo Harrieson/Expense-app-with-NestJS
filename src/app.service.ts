@@ -6,6 +6,11 @@ interface PayLoadData {
   amount: number;
   source: string;
 }
+
+// interface PayLoadDataUpdate {
+//   amount?: number;
+//   source?: string;
+// }
 @Injectable()
 export class AppService {
   getAllReports(type: ReportTypes) {

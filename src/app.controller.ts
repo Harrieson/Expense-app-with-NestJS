@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseEnumPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 import { ReportTypes, data } from "src/data";
 import { AppService } from "./app.service";
+import { CreateReportDTO, updateReportDTO } from './dtos/report.dto';
 
 @Controller('report/:type')
 export class AppController {
@@ -12,21 +13,19 @@ export class AppController {
 
 
   @Get()
-  getAllReports(@Param('type') type: string) {
+  getAllReports(@Param('type', new ParseEnumPipe(ReportTypes)) type: string) {
     const reportType = type === 'income' ? ReportTypes.Income : ReportTypes.Expense 
     return this.appService.getAllReports(reportType)
   }
   @Get(':id')
-  getReportByID(@Param('type') type: string, @Param('id') id: string) {
+  getReportByID(@Param('type', new ParseEnumPipe(ReportTypes)) type: string, @Param('id', ParseUUIDPipe) id: string) {
    const reportType = type === 'income' ? ReportTypes.Income : ReportTypes.Expense;
    return this.appService.getReportById(reportType, id);
   }
 
   @Post()
-  createReport( @Body() {amount, source}: {
-    amount: number;
-    source: string;
-  }, @Param('type') type: string) {
+  createReport( @Body() {amount, source}: CreateReportDTO,
+   @Param('type', new ParseEnumPipe(ReportTypes)) type: string) {
     const reportType = type === 'income' ? ReportTypes.Income : ReportTypes.Expense;
     return this.appService.createReport(reportType, {amount, source})
   }
@@ -34,9 +33,9 @@ export class AppController {
 
   @Put(':id')
   updateReport(
-    @Param('type') type: string,
-    @Param('id') id : string,
-    @Body() body: {amount: number; source: string}
+    @Param('type', new ParseEnumPipe(ReportTypes)) type: string,
+    @Param('id', ParseUUIDPipe) id : string,
+    @Body() body: updateReportDTO
   ) {
     const reportType= type === 'income' ? ReportTypes.Income : ReportTypes.Expense;
 
@@ -56,7 +55,7 @@ export class AppController {
   }
 
   @Delete(':id')
-  deleteReport(@Param('id') id: string) {
+  deleteReport(@Param('id',ParseUUIDPipe) id: string) {
    const reportIndex = data.report.findIndex(report => report.id === id)
 
    if ( reportIndex === -1) return;
