@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { ReportTypes, data } from './data';
+import { ReportResponse } from './dtos/report.dto';
 
 interface PayLoadData {
   amount: number;
@@ -32,6 +33,6 @@ export class AppService {
       type,
     };
     data.report.push(newReport);
-    return newReport;
+    return ReportResponse;
   }
 }
